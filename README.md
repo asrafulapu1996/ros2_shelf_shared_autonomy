@@ -168,11 +168,6 @@ ros2 action send_goal /gripper_action_controller/gripper_cmd \
 src/
 ├── apps/
 │   └── picker/                        # Pick-and-place application (Python)
-│       ├── launch/
-│       │   ├── sim.launch.py              ← Terminal 1+2 combined
-│       │   ├── teleop.launch.py           ← Terminal 3 (joy + keyboard teleop)
-│       │   ├── pick.launch.py             ← Terminal 4+5 combined
-│       │   └── pick_and_place.launch.py   ← all-in-one launch
 │       └── picker/
 │           ├── medicine_detector.py       ← DBSCAN-based RGBD detector
 │           ├── picker_node.py             ← motion controller

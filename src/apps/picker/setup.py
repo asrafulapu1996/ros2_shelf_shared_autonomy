@@ -7,12 +7,6 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/picker']),
         ('share/picker', ['package.xml']),
-        ('share/picker/launch', [
-            'launch/sim.launch.py',
-            'launch/teleop.launch.py',
-            'launch/pick.launch.py',
-            'launch/pick_and_place.launch.py',
-        ]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
