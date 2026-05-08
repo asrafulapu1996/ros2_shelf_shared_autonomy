@@ -100,7 +100,7 @@ Wait until you see **`"Ready to take commands"`** in the terminal output before 
 **Option A — Gamepad** (connects a physical joystick):
 
 ```bash
-source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 run joy joy_node
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 launch mycobot_moveit_demos gamepad_teleop.launch.py
 ```
 
 **Option B — Keyboard** (full arm teleoperation + pick trigger, no gamepad needed):
