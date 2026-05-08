@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<!--
+  Medicine shelf pick-and-place demo
+  =====================================
+  Layout shift: robot moved 22 cm back (x = -0.30), shelf + medicines shifted
+  the same 22 cm so the robot-to-medicine TF distance stays identical (0.265 m).
+  Camera stand sits behind the open-back shelf at Gazebo x = 0.35,
+  giving 38.5 cm clear view distance to the medicine front faces at x = -0.035.
+
+  Robot joint-1 world position : (-0.30, 0, ~0.65 m)   max reach 0.28 m
+
+  Table top          : z = 0.50 m  (table centred at origin, spans ±0.40 m in x)
+  Shelf origin       : (-0.06, 0, 0.50)   front face at world x = -0.06 m
+  Medicines          : x = -0.035 m  (25 mm proud of shelf front face)
+  y positions        : -0.09  -0.03  +0.03  +0.09   (60 mm centres, 32 mm gap)
+
+  Shelf board tops (world z):   Lower : 0.68 m    Upper : 0.80 m   (unchanged)
+
+  Medicine centres (world z):
+    packet_a (h=55mm) on lower : 0.68 + 0.0275 = 0.7075 m
+    packet_c (h=58mm) on lower : 0.68 + 0.0290 = 0.7090 m
+    packet_b (h=65mm) on upper : 0.80 + 0.0325 = 0.8325 m
+    packet_c (h=58mm) on upper : 0.80 + 0.0290 = 0.8290 m
+
+  TF world (= base_link at robot spawn) medicine positions:
+    x = -Gazebo_y  →  {+0.09, +0.03, -0.03, -0.09}   (unchanged)
+    y = 0.265 m                                          (unchanged – same arm reach)
+    z = Gazebo_z - 0.52                                  (unchanged)
+
+  Camera stand: Gazebo (0.35, 0, 0.80) — 38.5 cm behind medicines.
+-->
+<sdf version="1.7">
+  <world name="default">
+
+    <plugin filename="gz-sim-physics-system"           name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"     name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system"           name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <gravity>0.0 0.0 -9.8</gravity>
+    <scene>
+      <shadows>false</shadows>
+      <ambient>0.7 0.7 0.7 1</ambient>
+      <background>0.5 0.6 0.7 1</background>
+    </scene>
+
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane</uri>
+    </include>
+
+    <!-- Robot work table (unchanged: centred at origin, 0.80 × 0.70 m top) -->
+    <include>
+      <uri>model://robot_platform</uri>
+      <name>robot_platform</name>
+      <pose>0 0 0.50 0 0 0</pose>
+    </include>
+
+    <!-- Medicine shelf: shifted 22 cm back with robot (front face at x = -0.06 m) -->
+    <include>
+      <uri>model://medicine_shelf</uri>
+      <name>medicine_shelf</name>
+      <pose>-0.06 0 0.50 0 0 0</pose>
+    </include>
+
+    <!-- ══════════════════════════════════════════════════════
+         LOWER SHELF  (board top world z = 0.68 m)
+         Alternating small-blue (packet_a) and wide-orange (packet_c)
+    ══════════════════════════════════════════════════════ -->
+
+    <include>
+      <uri>model://medicine_packet_a</uri>
+      <name>med_L1</name>
+      <pose>-0.035 -0.09 0.7075 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://medicine_packet_c</uri>
+      <name>med_L2</name>
+      <pose>-0.035 -0.03 0.7090 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://medicine_packet_a</uri>
+      <name>med_L3</name>
+      <pose>-0.035  0.03 0.7075 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://medicine_packet_c</uri>
+      <name>med_L4</name>
+      <pose>-0.035  0.09 0.7090 0 0 0</pose>
+    </include>
+
+    <!-- ══════════════════════════════════════════════════════
+         UPPER SHELF  (board top world z = 0.80 m)
+         Tall-green (packet_b) outer, wide-orange (packet_c) inner
+    ══════════════════════════════════════════════════════ -->
+
+    <include>
+      <uri>model://medicine_packet_b</uri>
+      <name>med_U1</name>
+      <pose>-0.035 -0.09 0.8325 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://medicine_packet_c</uri>
+      <name>med_U2</name>
+      <pose>-0.035 -0.03 0.8290 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://medicine_packet_c</uri>
+      <name>med_U3</name>
+      <pose>-0.035  0.03 0.8290 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://medicine_packet_b</uri>
+      <name>med_U4</name>
+      <pose>-0.035  0.09 0.8325 0 0 0</pose>
+    </include>
+
+
+  </world>
+</sdf>

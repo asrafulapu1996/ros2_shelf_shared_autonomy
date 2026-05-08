@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <!--
+    Pharmacy shelf  -  2 open levels, wooden finish, no back panel, no top cap.
+    Origin: front-bottom-centre.
+
+    Dimensions : 0.40 m wide (y) x 0.075 m deep (x) x 0.37 m tall (z)
+    Depth 75 mm fits widest medicine (packet_c = 50 mm) with 25 mm backing.
+
+    Shelf board tops (local z):
+      Lower : 0.18 m  ->  world z = 0.50 + 0.18 = 0.68 m
+      Upper : 0.30 m  ->  world z = 0.50 + 0.30 = 0.80 m
+
+    Clearance above tallest packet (65 mm) before upper board: 55 mm  OK
+    Medicines at world x = 0.185 m (flush with front face at x=0.16, 2.5 cm inside for widest box)
+  -->
+  <model name="medicine_shelf">
+    <static>true</static>
+    <link name="link">
+
+      <!-- Left side wall  (dark walnut) -->
+      <collision name="left_col">
+        <pose>0.0375 0.1975 0.185 0 0 0</pose>
+        <geometry><box><size>0.075 0.005 0.37</size></box></geometry>
+      </collision>
+      <visual name="left_vis">
+        <pose>0.0375 0.1975 0.185 0 0 0</pose>
+        <geometry><box><size>0.075 0.005 0.37</size></box></geometry>
+        <material>
+          <ambient>0.38 0.22 0.08 1</ambient>
+          <diffuse>0.45 0.28 0.10 1</diffuse>
+          <specular>0.08 0.05 0.02 1</specular>
+        </material>
+      </visual>
+
+      <!-- Right side wall  (dark walnut) -->
+      <collision name="right_col">
+        <pose>0.0375 -0.1975 0.185 0 0 0</pose>
+        <geometry><box><size>0.075 0.005 0.37</size></box></geometry>
+      </collision>
+      <visual name="right_vis">
+        <pose>0.0375 -0.1975 0.185 0 0 0</pose>
+        <geometry><box><size>0.075 0.005 0.37</size></box></geometry>
+        <material>
+          <ambient>0.38 0.22 0.08 1</ambient>
+          <diffuse>0.45 0.28 0.10 1</diffuse>
+          <specular>0.08 0.05 0.02 1</specular>
+        </material>
+      </visual>
+
+      <!-- Bottom base board  (lighter pine) -->
+      <collision name="base_col">
+        <pose>0.0375 0 0.006 0 0 0</pose>
+        <geometry><box><size>0.065 0.39 0.012</size></box></geometry>
+      </collision>
+      <visual name="base_vis">
+        <pose>0.0375 0 0.006 0 0 0</pose>
+        <geometry><box><size>0.065 0.39 0.012</size></box></geometry>
+        <material>
+          <ambient>0.62 0.42 0.18 1</ambient>
+          <diffuse>0.72 0.52 0.24 1</diffuse>
+          <specular>0.08 0.06 0.03 1</specular>
+        </material>
+      </visual>
+
+      <!-- Lower shelf board  (top at local z = 0.18)  lighter pine -->
+      <collision name="shelf_low_col">
+        <pose>0.0375 0 0.174 0 0 0</pose>
+        <geometry><box><size>0.065 0.39 0.012</size></box></geometry>
+      </collision>
+      <visual name="shelf_low_vis">
+        <pose>0.0375 0 0.174 0 0 0</pose>
+        <geometry><box><size>0.065 0.39 0.012</size></box></geometry>
+        <material>
+          <ambient>0.62 0.42 0.18 1</ambient>
+          <diffuse>0.72 0.52 0.24 1</diffuse>
+          <specular>0.08 0.06 0.03 1</specular>
+        </material>
+      </visual>
+
+      <!-- Upper shelf board  (top at local z = 0.30)  lighter pine -->
+      <collision name="shelf_top_col">
+        <pose>0.0375 0 0.294 0 0 0</pose>
+        <geometry><box><size>0.065 0.39 0.012</size></box></geometry>
+      </collision>
+      <visual name="shelf_top_vis">
+        <pose>0.0375 0 0.294 0 0 0</pose>
+        <geometry><box><size>0.065 0.39 0.012</size></box></geometry>
+        <material>
+          <ambient>0.62 0.42 0.18 1</ambient>
+          <diffuse>0.72 0.52 0.24 1</diffuse>
+          <specular>0.08 0.06 0.03 1</specular>
+        </material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>

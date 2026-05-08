@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <!--
+    Orange vitamin box  -  WIDE & SHALLOW  0.050(x) x 0.028(y) x 0.058(z) m
+    y = 28 mm  ->  just within ~30 mm gripper opening
+    Mass 55 g
+  -->
+  <model name="medicine_packet_c">
+    <static>false</static>
+    <link name="link">
+      <inertial>
+        <mass>0.055</mass>
+        <inertia>
+          <ixx>0.000019</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.000027</iyy><iyz>0</iyz>
+          <izz>0.000015</izz>
+        </inertia>
+      </inertial>
+      <collision name="col">
+        <geometry><box><size>0.050 0.028 0.058</size></box></geometry>
+        <surface><friction><ode><mu>0.9</mu><mu2>0.9</mu2></ode></friction></surface>
+      </collision>
+      <!-- Main body - deep orange -->
+      <visual name="body">
+        <geometry><box><size>0.050 0.028 0.058</size></box></geometry>
+        <material>
+          <ambient>0.85 0.38 0.05 1</ambient>
+          <diffuse>0.85 0.38 0.05 1</diffuse>
+          <specular>0.25 0.15 0.05 1</specular>
+        </material>
+      </visual>
+      <!-- White label band -->
+      <visual name="label">
+        <pose>0.0255 0 0 0 0 0</pose>
+        <geometry><box><size>0.001 0.026 0.025</size></box></geometry>
+        <material><ambient>0.95 0.95 0.95 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material>
+      </visual>
+      <!-- Yellow top stripe -->
+      <visual name="stripe_top">
+        <pose>0.0255 0 0.022 0 0 0</pose>
+        <geometry><box><size>0.001 0.026 0.012</size></box></geometry>
+        <material><ambient>1.0 0.85 0.10 1</ambient><diffuse>1.0 0.85 0.10 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+</sdf>

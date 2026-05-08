@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <!--
+    Green antibiotic box  -  MEDIUM-TALL  0.040(x) x 0.025(y) x 0.065(z) m
+    y = 25 mm  ->  within ~30 mm gripper opening
+    Mass 45 g
+  -->
+  <model name="medicine_packet_b">
+    <static>false</static>
+    <link name="link">
+      <inertial>
+        <mass>0.045</mass>
+        <inertia>
+          <ixx>0.000018</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.000022</iyy><iyz>0</iyz>
+          <izz>0.0000083</izz>
+        </inertia>
+      </inertial>
+      <collision name="col">
+        <geometry><box><size>0.040 0.025 0.065</size></box></geometry>
+        <surface><friction><ode><mu>0.9</mu><mu2>0.9</mu2></ode></friction></surface>
+      </collision>
+      <!-- Main body - forest green -->
+      <visual name="body">
+        <geometry><box><size>0.040 0.025 0.065</size></box></geometry>
+        <material>
+          <ambient>0.05 0.45 0.15 1</ambient>
+          <diffuse>0.05 0.45 0.15 1</diffuse>
+          <specular>0.15 0.25 0.15 1</specular>
+        </material>
+      </visual>
+      <!-- White label band -->
+      <visual name="label">
+        <pose>0.0205 0 0 0 0 0</pose>
+        <geometry><box><size>0.001 0.023 0.028</size></box></geometry>
+        <material><ambient>0.95 0.95 0.95 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material>
+      </visual>
+      <!-- Light-green top stripe -->
+      <visual name="stripe_top">
+        <pose>0.0205 0 0.026 0 0 0</pose>
+        <geometry><box><size>0.001 0.023 0.012</size></box></geometry>
+        <material><ambient>0.55 0.90 0.55 1</ambient><diffuse>0.55 0.90 0.55 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+</sdf>

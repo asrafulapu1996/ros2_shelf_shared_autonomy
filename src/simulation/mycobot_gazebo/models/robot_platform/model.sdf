@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <!--
+    Robot work table.
+    Top surface   : 0.80 m (x) × 0.70 m (y) × 0.04 m thick
+    Total height  : 0.50 m
+    Model origin  : top face of table-top (local z = 0, world z = 0.50)
+    Legs go downward from z = 0 to z = -0.50
+  -->
+  <model name="robot_platform">
+    <static>true</static>
+    <link name="link">
+
+      <!-- Table top -->
+      <collision name="top_col">
+        <pose>0 0 -0.02 0 0 0</pose>
+        <geometry><box><size>0.80 0.70 0.04</size></box></geometry>
+      </collision>
+      <visual name="top_vis">
+        <pose>0 0 -0.02 0 0 0</pose>
+        <geometry><box><size>0.80 0.70 0.04</size></box></geometry>
+        <material>
+          <ambient>0.60 0.40 0.20 1</ambient>
+          <diffuse>0.60 0.40 0.20 1</diffuse>
+          <specular>0.25 0.25 0.25 1</specular>
+        </material>
+      </visual>
+
+      <!-- Front-left leg -->
+      <collision name="leg_fl_col"><pose> 0.37  0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry></collision>
+      <visual    name="leg_fl_vis"><pose> 0.37  0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry>
+        <material><ambient>0.45 0.28 0.10 1</ambient><diffuse>0.45 0.28 0.10 1</diffuse></material></visual>
+
+      <!-- Front-right leg -->
+      <collision name="leg_fr_col"><pose> 0.37 -0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry></collision>
+      <visual    name="leg_fr_vis"><pose> 0.37 -0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry>
+        <material><ambient>0.45 0.28 0.10 1</ambient><diffuse>0.45 0.28 0.10 1</diffuse></material></visual>
+
+      <!-- Back-left leg -->
+      <collision name="leg_bl_col"><pose>-0.37  0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry></collision>
+      <visual    name="leg_bl_vis"><pose>-0.37  0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry>
+        <material><ambient>0.45 0.28 0.10 1</ambient><diffuse>0.45 0.28 0.10 1</diffuse></material></visual>
+
+      <!-- Back-right leg -->
+      <collision name="leg_br_col"><pose>-0.37 -0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry></collision>
+      <visual    name="leg_br_vis"><pose>-0.37 -0.32 -0.27 0 0 0</pose><geometry><box><size>0.05 0.05 0.46</size></box></geometry>
+        <material><ambient>0.45 0.28 0.10 1</ambient><diffuse>0.45 0.28 0.10 1</diffuse></material></visual>
+
+      <!-- Cross-brace (structural beam under table-top) -->
+      <collision name="brace_col"><pose>0 0 -0.30 0 0 0</pose><geometry><box><size>0.72 0.04 0.04</size></box></geometry></collision>
+      <visual    name="brace_vis"><pose>0 0 -0.30 0 0 0</pose><geometry><box><size>0.72 0.04 0.04</size></box></geometry>
+        <material><ambient>0.45 0.28 0.10 1</ambient><diffuse>0.45 0.28 0.10 1</diffuse></material></visual>
+
+    </link>
+  </model>
+</sdf>

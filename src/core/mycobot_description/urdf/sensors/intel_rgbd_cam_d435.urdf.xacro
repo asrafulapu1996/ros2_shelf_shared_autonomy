@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="use_camera" default="true"/>
+  <xacro:arg name="use_gazebo" default="true"/>
+  <xacro:arg name="prefix" default=""/>
+
+  <xacro:if value="${'true' == '$(arg use_camera)' and 'true' == '$(arg use_gazebo)'}">
+
+    <xacro:property name="M_PI" value="3.1415926535897931" />
+
+    <xacro:property name="d435_cam_width" value="0.090"/>
+    <xacro:property name="d435_cam_height" value="0.025"/>
+    <xacro:property name="d435_cam_depth" value="0.02505"/>
+
+    <xacro:property name="d435_cam_depth_to_infra1_offset" value="0.0"/>
+    <xacro:property name="d435_cam_depth_to_infra2_offset" value="-0.050"/>
+    <xacro:property name="d435_cam_depth_to_color_offset" value="0.015"/>
+
+    <!--
+      Camera stand: bar-and-arm structure, base on table, clear of camera view.
+      ─────────────────────────────────────────────────────────────────────────
+      Scene layout (Gazebo world coords, robot at Gazebo x = -0.30):
+        Stand base  : Gazebo (0.30,  0, 0.50)  — 10 cm inside table edge (table ±0.40 m)
+        Pole top    : Gazebo (0.30,  0, 0.80)  — 30 cm vertical bar
+        Camera head : Gazebo (0.35,  0, 0.80)  — 5 cm horizontal arm toward shelf
+        Medicines   : Gazebo (-0.035, ±0.09, 0.71–0.83)
+
+      The pole and arm are BEHIND the camera's look direction (camera looks in Gazebo -X;
+      pole is at x = 0.30, camera at x = 0.35 → pole is +X of camera = behind).
+      Objects within 5 cm of camera optical centre are below the D435 near-clip → invisible
+      in the point cloud, so the arm never corrupts depth data.
+
+      TF world frame (= base_link at robot spawn):
+        camera_stand_link base  : TF (0, 0.60, -0.02)   [table surface]
+        camera_head_link origin : TF (0, 0.65,  0.28)   [38.5 cm from medicines]
+    -->
+    <!-- Stand base directly below camera — pole only, no arm                    -->
+    <!-- Gazebo: base (0.35, 0, 0.50), pole top = camera at (0.35, 0, 0.80)    -->
+    <!-- TF world: base at (0, 0.65, -0.02), camera at (0, 0.65, 0.28)         -->
+    <joint name="camera_stand_joint" type="fixed">
+      <parent link="world"/>
+      <child link="camera_stand_link"/>
+      <origin xyz="0.0 0.65 -0.02" rpy="0 0 0"/>
+    </joint>
+
+    <link name="camera_stand_link">
+      <inertial>
+        <mass value="0.8"/>
+        <origin xyz="0 0 0.15"/>
+        <inertia ixx="0.006" ixy="0.0" ixz="0.0" iyy="0.006" iyz="0.0" izz="0.001"/>
+      </inertial>
+
+      <!-- Base plate: 12 × 10 cm flat plate on table surface -->
+      <visual>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <geometry><box size="0.12 0.10 0.02"/></geometry>
+        <material name="steel_dark"><color rgba="0.25 0.25 0.25 1"/></material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.01" rpy="0 0 0"/>
+        <geometry><box size="0.12 0.10 0.02"/></geometry>
+      </collision>
+
+      <!-- Vertical pole: 1.6 cm diameter, 40 cm tall -->
+      <visual>
+        <origin xyz="0 0 0.20" rpy="0 0 0"/>
+        <geometry><cylinder radius="0.008" length="0.40"/></geometry>
+        <material name="steel_dark"><color rgba="0.25 0.25 0.25 1"/></material>
+      </visual>
+    </link>
+
+    <!-- Camera raised to TF z=0.38m — 10 cm above upper shelf medicines.      -->
+    <!-- Pitch=0.35 rad (20°) downward centres the view between both shelves.  -->
+    <!-- TF: (0,0.65,-0.02) + (0,-0.04,0.40) = (0, 0.61, 0.38)               -->
+    <joint name="camera_head_joint" type="fixed">
+      <parent link="camera_stand_link"/>
+      <child link="camera_head_link"/>
+      <origin xyz="0 -0.04 0.40" rpy="0 0.35 -1.5708"/>
+    </joint>
+
+    <link name="camera_head_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0.0 ${M_PI/2}"/>
+        <geometry>
+          <mesh filename="file://$(find mycobot_description)/meshes/d435/visual/d435.stl" />
+        </geometry>
+        <material name="aluminum">
+          <color rgba="0.5 0.5 0.5 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${d435_cam_depth} ${d435_cam_width} ${d435_cam_height}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.072" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257" />
+      </inertial>
+    </link>
+
+    <joint name="camera_head_depth_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="camera_head_link"/>
+      <child link="camera_head_depth_frame" />
+    </joint>
+    <link name="camera_head_depth_frame"/>
+
+    <joint name="camera_head_depth_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <parent link="camera_head_depth_frame" />
+      <child link="camera_head_depth_optical_frame" />
+    </joint>
+    <link name="camera_head_depth_optical_frame"/>
+
+    <joint name="camera_head_infra1_joint" type="fixed">
+      <origin xyz="0 ${d435_cam_depth_to_infra1_offset} 0" rpy="0 0 0" />
+      <parent link="camera_head_link" />
+      <child link="camera_head_infra1_frame" />
+    </joint>
+    <link name="camera_head_infra1_frame"/>
+
+    <joint name="camera_head_infra1_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <parent link="camera_head_infra1_frame" />
+      <child link="camera_head_infra1_optical_frame" />
+    </joint>
+    <link name="camera_head_infra1_optical_frame"/>
+
+    <joint name="camera_head_infra2_joint" type="fixed">
+      <origin xyz="0 ${d435_cam_depth_to_infra2_offset} 0" rpy="0 0 0" />
+      <parent link="camera_head_link" />
+      <child link="camera_head_infra2_frame" />
+    </joint>
+    <link name="camera_head_infra2_frame"/>
+
+    <joint name="camera_head_infra2_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <parent link="camera_head_infra2_frame" />
+      <child link="camera_head_infra2_optical_frame" />
+    </joint>
+    <link name="camera_head_infra2_optical_frame"/>
+
+    <joint name="camera_head_color_joint" type="fixed">
+      <origin xyz="0 ${d435_cam_depth_to_color_offset} 0" rpy="0 0 0" />
+      <parent link="camera_head_link" />
+      <child link="camera_head_color_frame" />
+    </joint>
+    <link name="camera_head_color_frame"/>
+
+    <joint name="camera_head_color_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <parent link="camera_head_color_frame" />
+      <child link="camera_head_color_optical_frame" />
+    </joint>
+    <link name="camera_head_color_optical_frame"/>
+
+    <gazebo reference="camera_head_link">
+      <sensor name="camera_head" type="rgbd_camera">
+        <camera>
+          <horizontal_fov>1.5184</horizontal_fov>
+          <image>
+            <width>424</width>
+            <height>240</height>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>1.5</far>
+          </clip>
+        </camera>
+        <always_on>1</always_on>
+        <gz_frame_id>camera_head_link</gz_frame_id>
+        <topic>camera_head</topic>
+        <update_rate>5</update_rate>
+        <visualize>true</visualize>
+      </sensor>
+    </gazebo>
+
+  </xacro:if>
+</robot>
