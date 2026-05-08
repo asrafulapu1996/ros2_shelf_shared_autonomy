@@ -1,10 +1,10 @@
-# myCobot 280 Autonomous Medicine Pick-and-Place
+# myCobot 280 Autonomous Shared Pharmaceutical Medicine Handling 
 
 ![ROS 2 Jazzy](https://img.shields.io/badge/ROS%202-Jazzy-blue)
 ![Gazebo Harmonic](https://img.shields.io/badge/Gazebo-Harmonic-orange)
 ![License](https://img.shields.io/badge/License-BSD--3--Clause-green)
 
-A ROS 2 simulation of an **Elephant Robotics myCobot 280** 6-DOF arm performing autonomous pick-and-place of medicine packets from a two-tier shelf. The robot detects medicines from a live Intel RealSense D435 RGBD point cloud, selects the closest target, and executes a collision-free grasp using MoveIt 2.
+A ROS 2 simulation of an **Elephant Robotics myCobot 280** 6-DOF arm performing autonomous pick-and-place of medicine packets from a two-tier shelf. This is a shared human-robot collaboration system. The operator manually drives the robot close to the mdichine want to pick. The robot detects the target medicines from a live Intel RealSense D435 RGBD point cloud, selects the closest target, and executes a collision-free grasp using MoveIt 2.
 
 > **Stack:** ROS 2 Jazzy · Gazebo Harmonic · MoveIt 2 · Python 3.12 · Ubuntu 24.04
 
