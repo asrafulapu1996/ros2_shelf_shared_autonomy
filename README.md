@@ -260,6 +260,7 @@ ros2 run picker picker_node --ros-args -p grasp_button_index:=9
 ```
 
 ---
+© 2026 Asraful Apu, Aaron Aguilar, Andrew Lee, Brayden Stidham . All rights reserved.
 
 ## License
 
