@@ -1,4 +1,4 @@
-# myCobot 280 Autonomous Shared Pharmaceutical Medicine Handling 
+# MyCobot 280 Autonomous Shared Pharmaceutical Medichine Handling 
 
 ![ROS 2 Jazzy](https://img.shields.io/badge/ROS%202-Jazzy-blue)
 ![Gazebo Harmonic](https://img.shields.io/badge/Gazebo-Harmonic-orange)
