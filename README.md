@@ -12,8 +12,15 @@ A ROS 2 simulation of an **Elephant Robotics myCobot 280** 6-DOF arm performing 
 
 ## Demo
 
-> *Add a screenshot or screen-recording GIF here (e.g. `docs/demo.gif`) and replace this line with:*
-> `![Demo](docs/demo.gif)`
+<p align="center">
+  <img src="docs/simulation_overview.png" width="48%" alt="Simulation Overview" />
+  &nbsp;
+  <img src="docs/detection_rviz.png" width="48%" alt="Medicine Detection in RViz" />
+</p>
+
+<p align="center">
+  <img src="docs/demo.gif" width="80%" alt="Pick-and-Place Demo" />
+</p>
 
 ---
 
