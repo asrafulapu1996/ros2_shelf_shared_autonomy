@@ -26,12 +26,6 @@ A ROS 2 simulation of an **Elephant Robotics myCobot 280** 6-DOF arm performing 
 | Gazebo | [Harmonic](https://gazebosim.org/docs/harmonic/install) |
 | Python | 3.12 |
 
-Make sure you have sourced your ROS 2 installation before proceeding:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-```
-
 ---
 
 ## Installation
@@ -81,48 +75,84 @@ echo "source ~/class_ws/install/setup.bash" >> ~/.bashrc
 
 ---
 
-## Quick Start
+## Running the Project
 
-Launch the full simulation stack with a single command:
+Open **5 terminals** and run each command in order. Wait for Terminal 1 and 2 to be fully ready before starting the rest.
+
+### Terminal 1 — Gazebo Simulation
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source ~/class_ws/install/setup.bash
-ros2 launch picker pick_and_place.launch.py
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 launch mycobot_gazebo mycobot.gazebo.launch.py use_camera:=true
 ```
 
-Wait approximately **35 seconds** for all nodes to come up. The startup sequence is:
+Wait until the world is loaded, the robot is spawned, and the arm moves to the home pose (~15 seconds).
 
-| Time | What starts |
+### Terminal 2 — MoveIt 2 + RViz
+
+```bash
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 launch mycobot_moveit_config move_group.launch.py
+```
+
+Wait until you see **`"Ready to take commands"`** in the terminal output before proceeding.
+
+### Terminal 3 — Input Device (gamepad or keyboard)
+
+**Option A — Gamepad** (connects a physical joystick):
+
+```bash
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 run joy joy_node
+```
+
+**Option B — Keyboard** (full arm teleoperation + pick trigger, no gamepad needed):
+
+```bash
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 run picker keyboard_trigger
+```
+
+Keyboard controls:
+
+| Key | Action |
 |---|---|
-| 0 s | Gazebo + robot description + controllers + D435 camera |
-| 5 s | Robot spawned in Gazebo |
-| 12 s | Arm moves to home pose |
-| 20 s | MoveIt 2 move_group + RViz |
-| 25 s | Gamepad driver (`joy_node`) |
-| 28 s | Medicine detector |
-| 32 s | Picker node |
+| `W` / `S` | Move EEF +X / -X (10 mm) |
+| `A` / `D` | Move EEF +Y / -Y (10 mm) |
+| `Q` / `E` | Move EEF +Z / -Z (10 mm) |
+| `Z` / `X` | Rotate base joint +/- 5.7° |
+| `O` | Open gripper |
+| `C` | Close gripper |
+| `H` | Go to home position |
+| `P` | Print current EEF pose |
+| `Enter` | Trigger pick-and-place / confirm release |
+| `ESC` | Quit |
 
-Launch without RViz:
+### Terminal 4 — Medicine Detector
 
 ```bash
-ros2 launch picker pick_and_place.launch.py use_rviz:=false
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 run picker medicine_detector
 ```
+
+Detected medicines appear as **green** (target) and **orange** (others) bounding boxes in the RViz camera overlay on topic `/medicine_detection_image`.
+
+### Terminal 5 — Picker Node
+
+```bash
+source /opt/ros/jazzy/setup.bash && cd ~/class_ws && source install/setup.bash && ros2 run picker picker_node
+```
+
+Wait for the log: `Picker ready. Start medicine_detector then press Start.`
 
 ---
 
 ## How to Use
 
-1. Connect a gamepad (any device supported by the Linux `joy` driver)
-2. Wait for the picker log: `Picker ready. Start medicine_detector then press Start`
-3. Detected medicines appear as **green** (target) and **orange** (others) boxes in the RViz camera overlay at `/medicine_detection_image`
-4. **Press Start (button 7)** to begin a pick-and-place cycle
-5. The robot picks the closest medicine and carries it to the drop position above the table
-6. The robot holds the medicine and logs: `Holding medicine at drop position. Open gripper manually then press Start to go home.`
-7. Open the gripper manually (see below)
-8. **Press Start again** — the arm returns home
+Once all 5 terminals are running:
 
-### Manually open the gripper
+1. **Press Start** on the gamepad (button 7) — or press **Enter** if using the keyboard
+2. The robot picks the closest detected medicine and carries it to the table drop position
+3. The robot holds the medicine and waits — log shows: `Holding medicine at drop position. Open gripper manually then press Start to go home.`
+4. Open the gripper (press `O` on keyboard, or run the command below)
+5. **Press Start / Enter again** — the arm returns home
+
+### Manually open the gripper from a separate terminal
 
 ```bash
 ros2 action send_goal /gripper_action_controller/gripper_cmd \
@@ -139,10 +169,14 @@ src/
 ├── apps/
 │   └── picker/                        # Pick-and-place application (Python)
 │       ├── launch/
-│       │   └── pick_and_place.launch.py   ← master launch (runs everything)
+│       │   ├── sim.launch.py              ← Terminal 1+2 combined
+│       │   ├── teleop.launch.py           ← Terminal 3 (joy + keyboard teleop)
+│       │   ├── pick.launch.py             ← Terminal 4+5 combined
+│       │   └── pick_and_place.launch.py   ← all-in-one launch
 │       └── picker/
 │           ├── medicine_detector.py       ← DBSCAN-based RGBD detector
 │           ├── picker_node.py             ← motion controller
+│           ├── keyboard_trigger.py        ← keyboard teleop + pick trigger
 │           └── keyboard_selector.py       ← keyboard target selector
 │
 ├── core/
@@ -166,15 +200,15 @@ All tunable parameters are at the top of [src/apps/picker/picker/picker_node.py]
 
 | Parameter | Default | Description |
 |---|---|---|
-| `GRIPPER_REACH` | `0.120` m | Distance offset from `link6_flange` to stop before the medicine face. Increase to grasp earlier; decrease to reach deeper into the medicine |
-| `STAGING_Y` | `0.10` m | Y distance in front of the shelf where the arm parks before/after Cartesian moves |
-| `CLEAR_Y` | `-0.05` m | Y distance the arm retracts to before moving to the drop position, ensuring the shelf is unreachable |
+| `GRIPPER_REACH` | `0.120` m | Distance offset from `link6_flange` to stop before the medicine face. Increase to grasp earlier; decrease to reach deeper |
+| `STAGING_Y` | `0.10` m | Safe Y position in front of the shelf for all lateral moves |
+| `CLEAR_Y` | `-0.05` m | Y position the arm retracts to before the joint-space move to the drop position |
 | `TABLE_DROP_POS` | `[0.208, 0.091, 0.108]` | World-frame `link6_flange` XYZ at the table drop position |
 | `CART_SPEED` | `0.04` m/s | Speed for all Cartesian straight-line moves |
 
-### Updating the drop position
+### Re-tracing the drop position
 
-Move the arm to the desired position using the RViz **Motion Planning → Joints** panel, then read the live TF:
+Move the arm to the desired drop position, then read the live TF:
 
 ```bash
 ros2 run tf2_ros tf2_echo world link6_flange
@@ -183,21 +217,7 @@ ros2 run tf2_ros tf2_echo world link6_flange
 Copy the `Translation: [x, y, z]` into `TABLE_DROP_POS` and rebuild:
 
 ```bash
-cd ~/class_ws
-colcon build --packages-select picker --symlink-install
-```
-
-### Changing the gamepad button
-
-```bash
-# Find your button index
-ros2 topic echo /joy
-```
-
-Then pass the index at launch:
-
-```bash
-ros2 run picker picker_node --ros-args -p grasp_button_index:=9
+cd ~/class_ws && colcon build --packages-select picker --symlink-install
 ```
 
 ---
@@ -206,8 +226,8 @@ ros2 run picker picker_node --ros-args -p grasp_button_index:=9
 
 | Topic / Action / Service | Type | Description |
 |---|---|---|
-| `/joy` | `sensor_msgs/Joy` | Gamepad input |
-| `/target_medicine_pose` | `geometry_msgs/PoseStamped` | Closest detected medicine |
+| `/joy` | `sensor_msgs/Joy` | Gamepad / keyboard trigger input |
+| `/target_medicine_pose` | `geometry_msgs/PoseStamped` | Closest detected medicine pose |
 | `/detected_medicines_markers` | `visualization_msgs/MarkerArray` | RViz bounding-box overlays |
 | `/medicine_detection_image` | `sensor_msgs/Image` | Annotated colour image |
 | `/camera_head/depth/color/points` | `sensor_msgs/PointCloud2` | Input point cloud |
@@ -220,17 +240,22 @@ ros2 run picker picker_node --ros-args -p grasp_button_index:=9
 ## Troubleshooting
 
 **Planning fails / arm freezes**
-MoveIt is configured for 5 s planning time and 10 attempts per call. Wait for the `move_group` log `"Ready to take commands"` before pressing Start.
+MoveIt is configured for 5 s planning time and 10 attempts per call. Make sure Terminal 2 shows `"Ready to take commands"` before pressing Start.
 
 **No medicines detected**
 Check the point cloud is arriving:
 ```bash
 ros2 topic hz /camera_head/depth/color/points
 ```
-The camera is only active when `use_camera:=true` (default in the master launch).
 
 **Arm collides with shelf during drop move**
 Decrease `CLEAR_Y` (e.g. `-0.10`) so the arm pulls further back before the joint-space move to the drop position.
+
+**Wrong gamepad button**
+Check the button index with `ros2 topic echo /joy` then run:
+```bash
+ros2 run picker picker_node --ros-args -p grasp_button_index:=9
+```
 
 ---
 
